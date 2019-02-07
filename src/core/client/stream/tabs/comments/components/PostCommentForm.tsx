@@ -5,6 +5,7 @@ import { Field, Form, FormSpy } from "react-final-form";
 
 import { OnSubmit } from "talk-framework/lib/form";
 import { required } from "talk-framework/lib/validation";
+import { PropTypesOf } from "talk-framework/types";
 import {
   AriaInfo,
   Button,
@@ -16,6 +17,7 @@ import {
 import PoweredBy from "./PoweredBy";
 import RTE from "./RTE";
 
+import SubmitStatusContainer from "../containers/SubmitStatusContainer";
 import styles from "./PostCommentForm.css";
 
 interface FormProps {
@@ -26,6 +28,7 @@ export interface PostCommentFormProps {
   onSubmit: OnSubmit<FormProps>;
   onChange?: (state: FormState) => void;
   initialValues?: FormProps;
+  submitStatus: PropTypesOf<SubmitStatusContainer>["status"];
 }
 
 const PostCommentForm: StatelessComponent<PostCommentFormProps> = props => (
@@ -41,7 +44,7 @@ const PostCommentForm: StatelessComponent<PostCommentFormProps> = props => (
         <HorizontalGutter>
           <Field name="body" validate={required}>
             {({ input, meta }) => (
-              <div>
+              <HorizontalGutter size="half">
                 <Localized id="comments-postCommentForm-rteLabel">
                   <AriaInfo
                     component="label"
@@ -64,11 +67,12 @@ const PostCommentForm: StatelessComponent<PostCommentFormProps> = props => (
                 </Localized>
                 {meta.touched &&
                   (meta.error || meta.submitError) && (
-                    <Typography align="right" color="error" gutterBottom>
+                    <Typography align="right" color="error">
                       {meta.error || meta.submitError}
                     </Typography>
                   )}
-              </div>
+                <SubmitStatusContainer status={props.submitStatus} />
+              </HorizontalGutter>
             )}
           </Field>
           <Flex

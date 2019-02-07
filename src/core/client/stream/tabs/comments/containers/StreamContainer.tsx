@@ -99,6 +99,8 @@ const enhanced = withPaginationContainer<
         }
         ...CommentContainer_story
         ...ReplyListContainer1_story
+        ...CreateCommentReplyMutation_story
+        ...CreateCommentMutation_story
       }
     `,
     me: graphql`
@@ -106,6 +108,8 @@ const enhanced = withPaginationContainer<
         ...ReplyListContainer1_me
         ...CommentContainer_me
         ...UserBoxContainer_me
+        ...CreateCommentReplyMutation_me
+        ...CreateCommentMutation_me
       }
     `,
     settings: graphql`

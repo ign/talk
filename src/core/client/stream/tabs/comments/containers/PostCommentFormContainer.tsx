@@ -12,6 +12,7 @@ import {
 import PostCommentForm, {
   PostCommentFormProps,
 } from "../components/PostCommentForm";
+import getSubmitStatus, { SubmitStatus } from "../helpers/getSubmitStatus";
 
 interface InnerProps {
   createComment: CreateCommentMutation;
@@ -22,12 +23,13 @@ interface InnerProps {
 interface State {
   initialValues?: PostCommentFormProps["initialValues"];
   initialized: boolean;
+  submitStatus: SubmitStatus | null;
 }
 
 const contextKey = "postCommentFormBody";
 
 export class PostCommentFormContainer extends Component<InnerProps, State> {
-  public state: State = { initialized: false };
+  public state: State = { initialized: false, submitStatus: null };
 
   constructor(props: InnerProps) {
     super(props);
@@ -52,12 +54,20 @@ export class PostCommentFormContainer extends Component<InnerProps, State> {
     input,
     form
   ) => {
+    if (this.state.submitStatus) {
+      this.setState({ submitStatus: null });
+    }
     try {
-      await this.props.createComment({
-        storyID: this.props.storyID,
-        ...input,
-      });
-      form.reset({});
+      const submitStatus = getSubmitStatus(
+        await this.props.createComment({
+          storyID: this.props.storyID,
+          ...input,
+        })
+      );
+      if (submitStatus !== "RETRY") {
+        form.reset({});
+      }
+      this.setState({ submitStatus });
     } catch (error) {
       if (error instanceof BadUserInputError) {
         return error.invalidArgsLocalized;
@@ -65,7 +75,7 @@ export class PostCommentFormContainer extends Component<InnerProps, State> {
       // tslint:disable-next-line:no-console
       console.error(error);
     }
-    return undefined;
+    return;
   };
 
   private handleOnChange: PostCommentFormProps["onChange"] = state => {
@@ -85,6 +95,7 @@ export class PostCommentFormContainer extends Component<InnerProps, State> {
         onSubmit={this.handleOnSubmit}
         onChange={this.handleOnChange}
         initialValues={this.state.initialValues}
+        submitStatus={this.state.submitStatus}
       />
     );
   }
