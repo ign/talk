@@ -1597,23 +1597,6 @@ type Story {
 }
 
 ################################################################################
-## CommentsFilterInput
-################################################################################
-
-input CommentsFilterInput {
-  """
-  storyID when specified, will filter to show only Comment's on that Story.
-  """
-  storyID: ID
-
-  """
-  status when specified, will filter to show only Comment's with that
-  COMMENT_STATUS.
-  """
-  status: COMMENT_STATUS
-}
-
-################################################################################
 ## Query
 ################################################################################
 
@@ -1629,7 +1612,8 @@ type Query {
   comments(
     first: Int = 10
     after: Cursor
-    filter: CommentsFilterInput!
+    storyID: ID
+    status: COMMENT_STATUS
   ): CommentsConnection @auth(roles: [ADMIN, MODERATOR])
 
   """
